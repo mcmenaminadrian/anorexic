@@ -1,3 +1,6 @@
 codefreq<-read.csv("codepages.csv", header=FALSE)
 rwfreq<-read.csv("rwpages.csv", header=FALSE)
-
+colnames(codefreq)<-c('frame', 'count', 'freq')
+colnames(rwfreq)<-c('frame', 'count', 'freq')
+codemax<-apply(codefreq, 2, max, na.rm=TRUE)
+rwmax<-apply(rwfreq, 2, max, na.rm=TRUE)
