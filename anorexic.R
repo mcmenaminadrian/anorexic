@@ -1,10 +1,12 @@
 #!/usr/bin/env Rscript
 #command line options
-library("optparse")
+suppressWarnings(library("optparse"))
 option_list <- list(
   make_option(c("-t", "--thread"), type="integer", default=1,
 	help="Specify thread number")
 )
+opt <- parse_args(OptionParser(option_list=option_list))
+
 codefreq<-read.csv("codepages.csv", header=FALSE)
 rwfreq<-read.csv("rwpages.csv", header=FALSE)
 colnames(codefreq)<-c('frame', 'count', 'freq')
@@ -35,4 +37,7 @@ cat("<!ATTLIST load size CDATA #REQUIRED>\n")
 cat("<!ELEMENT spawn EMPTY>\n")
 cat("<!ATTLIST spawn thread CDATA #REQUIRED>\n")
 cat("]>\n")
+cat("<threadml thread=\"")
+cat(opt$t)
+cat("\" xmlns=\"http://cartesianproduct.wordpress.com\">\n")
 
