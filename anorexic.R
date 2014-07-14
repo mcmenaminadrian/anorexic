@@ -3,12 +3,16 @@
 suppressWarnings(library("optparse"))
 option_list <- list(
   make_option(c("-t", "--thread"), type="integer", default=1,
-	help="Specify thread number")
+	help="Specify thread number"),
+  make_option(c("-c", "--code"), type="character", default="codepages.csv",
+	help="Name of code page frequency csv file"),
+  make_option(c("-r", "--readwrite"), type="character", default="rwpages.csv",
+	help="Name of read-write page frequency csv file")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 
-codefreq<-read.csv("codepages.csv", header=FALSE)
-rwfreq<-read.csv("rwpages.csv", header=FALSE)
+codefreq<-read.csv(opt$c, header=FALSE)
+rwfreq<-read.csv(opt$r, header=FALSE)
 colnames(codefreq)<-c('frame', 'count', 'freq')
 colnames(rwfreq)<-c('frame', 'count', 'freq')
 codemax<-apply(codefreq, 2, max, na.rm=TRUE)
