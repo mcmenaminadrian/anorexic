@@ -1,6 +1,38 @@
+#!/usr/bin/env Rscript
+#command line options
+library("optparse")
+option_list <- list(
+  make_option(c("-t", "--thread"), type="integer", default=1,
+	help="Specify thread number")
+)
 codefreq<-read.csv("codepages.csv", header=FALSE)
 rwfreq<-read.csv("rwpages.csv", header=FALSE)
 colnames(codefreq)<-c('frame', 'count', 'freq')
 colnames(rwfreq)<-c('frame', 'count', 'freq')
 codemax<-apply(codefreq, 2, max, na.rm=TRUE)
 rwmax<-apply(rwfreq, 2, max, na.rm=TRUE)
+#write out the XML header
+cat("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>")
+cat("\n")
+cat("<!DOCTYPE threadml [\n")
+cat("<!ELEMENT threadml (instruction|modify|store|load|spawn)*>\n")
+cat("<!ATTLIST threadml version CDATA #FIXED \"0.1\">\n")
+cat("<!ATTLIST threadml thread CDATA #REQUIRED>\n")
+cat("<!ATTLIST threadml xmlns CDATA #FIXED")
+cat(" \"http://cartesianproduct.wordpress.com\">\n")
+cat("<!ELEMENT instruction EMPTY>\n")
+cat("<!ATTLIST instruction address CDATA #REQUIRED>\n")
+cat("<!ATTLIST instruction size CDATA #REQUIRED>\n")
+cat("<!ELEMENT modify EMPTY>\n")
+cat("<!ATTLIST modify address CDATA #REQUIRED>\n")
+cat("<!ATTLIST modify size CDATA #REQUIRED>\n")
+cat("<!ELEMENT store EMPTY>\n")
+cat("<!ATTLIST store address CDATA #REQUIRED>\n")
+cat("<!ATTLIST store size CDATA #REQUIRED>\n")
+cat("<!ELEMENT load EMPTY>\n")
+cat("<!ATTLIST load address CDATA #REQUIRED>\n")
+cat("<!ATTLIST load size CDATA #REQUIRED>\n")
+cat("<!ELEMENT spawn EMPTY>\n")
+cat("<!ATTLIST spawn thread CDATA #REQUIRED>\n")
+cat("]>\n")
+
