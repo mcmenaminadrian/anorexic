@@ -47,5 +47,12 @@ cat("<threadml thread=\"")
 cat(opt$t)
 cat("\" xmlns=\"http://cartesianproduct.wordpress.com\">\n")
 #spawn some lines
-if (opt$s > 0)
+if (opt$s > 0 && opt$t == 1) {
+  for (i in 2 : opt$s) {
+    cat("<spawn thread=\'")
+    cat(i)
+    cat("\' />\n")
+  }
+}
+
 
