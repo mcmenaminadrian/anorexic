@@ -19,6 +19,14 @@ colnames(codefreq)<-c('frame', 'count', 'freq')
 colnames(rwfreq)<-c('frame', 'count', 'freq')
 codemax<-apply(codefreq, 2, max, na.rm=TRUE)
 rwmax<-apply(rwfreq, 2, max, na.rm=TRUE)
+
+#get a page
+GetACodePage <- function(freq) {
+
+}
+
+
+
 #write out the XML header
 cat("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>")
 cat("\n")
@@ -54,5 +62,11 @@ if (opt$s > 0 && opt$t == 1) {
     cat("\' />\n")
   }
 }
+#get some distributions
+codeMins = c(apply(codefreq, 2, min, na.rm=TRUE))
+codeMaxs = c(apply(codefreq, 2, max, na.rm=TRUE))
+rwMins = c(apply(rwfreq, 2, min, na.rm=TRUE))
+rwMaxs = c(apply(rwfreq, 2, max, na.rm=TRUE))
+#pick a code page
 
 
