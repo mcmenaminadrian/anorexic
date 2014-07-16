@@ -7,7 +7,9 @@ option_list <- list(
   make_option(c("-c", "--code"), type="character", default="codepages.csv",
 	help="Name of code page frequency csv file"),
   make_option(c("-r", "--readwrite"), type="character", default="rwpages.csv",
-	help="Name of read-write page frequency csv file")
+	help="Name of read-write page frequency csv file"),
+  make_option(c("-s", "--spawn"), type="integer", default = 0,
+	help="Generate spawn commands up to thread [number]")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 
@@ -44,4 +46,6 @@ cat("]>\n")
 cat("<threadml thread=\"")
 cat(opt$t)
 cat("\" xmlns=\"http://cartesianproduct.wordpress.com\">\n")
+#spawn some lines
+if (opt$s > 0)
 
