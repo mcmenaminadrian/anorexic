@@ -19,14 +19,22 @@ option_list <- list(
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 
-codefreq<-read.csv(opt$c, header=FALSE)
-rwfreq<-read.csv(opt$r, header=FALSE)
+codefreq<-read.csv(opt$code, header=FALSE)
+rwfreq<-read.csv(opt$readwrite, header=FALSE)
 colnames(codefreq)<-c('frame', 'count', 'freq')
 colnames(rwfreq)<-c('frame', 'count', 'freq')
 codemax<-apply(codefreq, 2, max, na.rm=TRUE)
 rwmax<-apply(rwfreq, 2, max, na.rm=TRUE)
 codemin<-apply(codefreq, 2, min, na.rm=TRUE)
 rwmin<-apply(rwfreq, 2, min, na.rm=TRUE)
+codelengths<-read.csv(opt$sizecode, header=FALSE)
+rwlengths<-read.csv(opt$sizerw, header=FALSE)
+colnames(codelengths)<-c('length', 'count', 'freq')
+colnames(rwlengths)<-c('length', 'count', 'freq')
+codelengthMin<-apply(codelengths, 2, min, na.rm=TRUE)
+codelengthMax<-apply(codelengths, 2, max, na.rm=TRUE)
+rwlengthMin<-apply(rwlengths, 2, min, na.rm=TRUE)
+rwlengthMax<-apply(rwlengths, 2, max, na.rm=TRUE)
 
 #get a page
 GetACodePage <- function() {
@@ -37,7 +45,34 @@ GetACodePage <- function() {
 }
 
 GetACodePageLength <- function() {
-  randLength
+  randLength<-runif(1, codelengthMin[3], codelengthMax[3])
+  possibleLengths<-subset(codelengths, freq >= randLength)
+  lengthToGet <- subset(possibleLengths, freq == (apply(possibleLengths, 2, min))[3])
+  return(lengthToGet)
+}
+
+WriteOutCode<- function(page, offset, length) {
+  writePoint <- (bitwShiftL(page, 12) + offset)
+  localCount<-0
+  instructions <- 0
+  while(localCount < length) {
+    cat("<instruction address=\"")
+    cat(writePoint)
+    cat("\" size=\"")
+    maxInst <- length - localCount
+    if (maxInst < 16) {
+      theLength <- sample(1:maxInst, 1)
+      cat(theLength)
+      localCount <- localCount + theLength
+    } else {
+      theLength <- sample(1:16, 1)
+      cat(theLength)
+      localCount <- localCount + theLength
+    }
+    cat("\" />\n")
+    instructions <- instructions + 1
+  }
+  return(instructions)
 }
 
 #write out the XML header
@@ -82,5 +117,8 @@ codeMaxs = c(apply(codefreq, 2, max, na.rm=TRUE))
 rwMins = c(apply(rwfreq, 2, min, na.rm=TRUE))
 rwMaxs = c(apply(rwfreq, 2, max, na.rm=TRUE))
 #pick a code page
+instructionCount<-0
 codePage<-(GetACodePage())[1]
-codePage
+startPoint<-sample(0:4095)
+instructionCount <- instructionCount +
+    WriteOutCode(codePage$frame, startPoint, GetACodePageLength())
