@@ -29,14 +29,16 @@ codemin<-apply(codefreq, 2, min, na.rm=TRUE)
 rwmin<-apply(rwfreq, 2, min, na.rm=TRUE)
 
 #get a page
-GetACodePage <- function(freq) {
+GetACodePage <- function() {
   randCode <- runif(1, codemin[3], codemax[3])
   possiblePages <- subset(codefreq, freq >= randCode)
-  pageToGet <- subset(possiblePages, freq == (apply(possiblePages, 2, min))[3]) 
+  pageToGet <- subset(possiblePages, freq == (apply(possiblePages, 2, min))[3])
   return(pageToGet)
 }
 
-
+GetACodePageLength <- function() {
+  randLength
+}
 
 #write out the XML header
 cat("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>")
@@ -63,12 +65,12 @@ cat("<!ELEMENT spawn EMPTY>\n")
 cat("<!ATTLIST spawn thread CDATA #REQUIRED>\n")
 cat("]>\n")
 cat("<threadml thread=\"")
-cat(opt$t)
+cat(opt$thread)
 cat("\" xmlns=\"http://cartesianproduct.wordpress.com\">\n")
 #spawn some lines
-opt$s
-if (opt$s > opt$t) {
-  for (i in opt$t : opt$s) {
+#opt$s
+if (opt$spawn > opt$thread) {
+  for (i in (opt$thread + 1) : opt$spawn) {
     cat("<spawn thread=\'")
     cat(i)
     cat("\' />\n")
@@ -81,4 +83,4 @@ rwMins = c(apply(rwfreq, 2, min, na.rm=TRUE))
 rwMaxs = c(apply(rwfreq, 2, max, na.rm=TRUE))
 #pick a code page
 codePage<-(GetACodePage())[1]
-
+codePage
