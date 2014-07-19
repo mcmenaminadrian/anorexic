@@ -44,37 +44,38 @@ GetACodePage <- function() {
   return(pageToGet)
 }
 
-GetACodePageLength <- function() {
-  randLength<-runif(1, codelengthMin[3], codelengthMax[3])
-  possibleLengths<-subset(codelengths, freq >= randLength)
+GetACodePageLength <- function(mins, maxs, lengths) {
+  randLength<-runif(1, mins[3], maxs[3])
+  possibleLengths<-subset(lengths, freq >= randLength)
   lengthToGet <- subset(possibleLengths, freq == (apply(possibleLengths, 2, min))[3])
   return(lengthToGet)
 }
 
-WriteOutCode<- function(page, offset, length) {
-  writePoint <- (bitwShiftL(page, 12) + offset)
+WriteOutCode<- function(page, offset, lengthI) {
+  writePoint <- bitwShiftL(page, 12)
   localCount<-0
   instructions <- 0
-  while(localCount < length) {
+  while(localCount < lengthI$length) {
     cat("<instruction address=\"")
     cat(writePoint)
     cat("\" size=\"")
-    maxInst <- length - localCount
+    maxInst <- lengthI$length - localCount
     if (maxInst < 16) {
       theLength <- sample(1:maxInst, 1)
       cat(theLength)
       localCount <- localCount + theLength
+      writePoint <- writePoint + theLength
     } else {
       theLength <- sample(1:16, 1)
       cat(theLength)
       localCount <- localCount + theLength
+      writePoint <- writePoint + theLength
     }
     cat("\" />\n")
     instructions <- instructions + 1
   }
   return(instructions)
 }
-
 #write out the XML header
 cat("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>")
 cat("\n")
@@ -120,5 +121,7 @@ rwMaxs = c(apply(rwfreq, 2, max, na.rm=TRUE))
 instructionCount<-0
 codePage<-(GetACodePage())[1]
 startPoint<-sample(0:4095)
+lengthToUse <-GetACodePageLength(codelengthMin, codelengthMax, codelengths)[1]
+lengthToUse
 instructionCount <- instructionCount +
-    WriteOutCode(codePage$frame, startPoint, GetACodePageLength())
+    WriteOutCode(codePage$frame, startPoint, lengthToUse)
