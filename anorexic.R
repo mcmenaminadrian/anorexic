@@ -36,7 +36,7 @@ codelengthMax<-apply(codelengths, 2, max, na.rm=TRUE)
 rwlengthMin<-apply(rwlengths, 2, min, na.rm=TRUE)
 rwlengthMax<-apply(rwlengths, 2, max, na.rm=TRUE)
 
-#get a page
+#code writing functions
 GetACodePage <- function() {
   randCode <- runif(1, codemin[3], codemax[3])
   possiblePages <- subset(codefreq, freq >= randCode)
@@ -76,6 +76,53 @@ WriteOutCode<- function(page, offset, lengthI) {
   }
   return(instructions)
 }
+
+#RW writing functions
+GetARWPage <- function() {
+  randCode <- runif(1, rwmin[3], rwmax[3])
+  possiblePages <- subset(rwfreq, freq >= randCode)
+  pageToGet <- subset(possiblePages, freq == (apply(possiblePages, 2, min))[3])
+  return(pageToGet)
+}
+
+GetARWPageLength <- function(mins, maxs, lengths) {
+  randLength<-runif(1, mins[3], maxs[3])
+  possibleLengths<-subset(lengths, freq >= randLength)
+  lengthToGet <- subset(possibleLengths, freq == (apply(possibleLengths, 2, min))[3])
+  return(lengthToGet)
+}
+
+WriteOutRW<- function(page, offset, lengthI) {
+  writePoint <- bitwShiftL(page, 12)
+  localCount<-0
+  instructions <- 0
+  while(localCount < lengthI$length) {
+    if (runif(1, 0, 1) > 0.9) {
+      cat("<modify")
+    } else {
+      cat("<load")
+    }
+    cat(" address=\"")
+    cat(writePoint)
+    cat("\" size=\"")
+    maxInst <- lengthI$length - localCount
+    if (maxInst < 16) {
+      theLength <- sample(1:maxInst, 1)
+      cat(theLength)
+      localCount <- localCount + theLength
+      writePoint <- writePoint + theLength
+    } else {
+      theLength <- sample(1:16, 1)
+      cat(theLength)
+      localCount <- localCount + theLength
+      writePoint <- writePoint + theLength
+    }
+    cat("\" />\n")
+    instructions <- instructions + 1
+  }
+  return(instructions)
+}
+
 #write out the XML header
 cat("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>")
 cat("\n")
@@ -131,16 +178,19 @@ instructionCount <- instructionCount +
 lastWasCode <- TRUE
 while(instructionCount < 1000000) {
   startPoint<-sample(0:4095)
-  if (lastWasCode == FALSE) {
+  if (lastWasCode == TRUE) {
     if (runif(1, 0, 1) > 0.7) {
       #code
       codePage<-(GetACodePage())[1]
       lengthToUse<-GetACodePageLength(codelengthMin, codelengthMax, codelengths)[1]
       instructionCount <- instructionCount +
         WriteOutCode(codePage$frame, startPoint, lengthToUse)
-      lastWasCode<-TRUE
     } else {
-      #memory
+      rwPage<-(GetARWPage())[1]
+      lengthToUse<-GetARWPageLength(rwlengthMin, rwlengthMax, rwlengths)[1]
+      instructionCount <- instructionCount +
+        WriteOutRW(rwPage$frame, startPoint, lengthToUse)
+      lastWasCode<-FALSE
     } 
   } else {
     #code
