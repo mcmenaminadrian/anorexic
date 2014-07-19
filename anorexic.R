@@ -201,4 +201,5 @@ while(instructionCount < 1000000) {
     lastWasCode<-TRUE
   }
 }
+cat("</threadml>\n")
 
