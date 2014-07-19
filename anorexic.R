@@ -52,7 +52,7 @@ GetACodePageLength <- function(mins, maxs, lengths) {
 }
 
 WriteOutCode<- function(page, offset, lengthI) {
-  writePoint <- bitwShiftL(page, 12)
+  writePoint <- page * 2^12 + offset
   localCount<-0
   instructions <- 0
   while(localCount < lengthI$length) {
@@ -93,7 +93,8 @@ GetARWPageLength <- function(mins, maxs, lengths) {
 }
 
 WriteOutRW<- function(page, offset, lengthI) {
-  writePoint <- bitwShiftL(page, 12)
+#  writePoint <- bitwShiftL(page, 12)
+  writePoint <- page * 2^12 + offset
   localCount<-0
   instructions <- 0
   while(localCount < lengthI$length) {
@@ -169,7 +170,7 @@ rwMaxs = c(apply(rwfreq, 2, max, na.rm=TRUE))
 #pick a code page
 instructionCount<-0
 codePage<-(GetACodePage())[1]
-startPoint<-sample(0:4095)
+startPoint<-sample(0:4095, 1)
 lengthToUse <-GetACodePageLength(codelengthMin, codelengthMax, codelengths)[1]
 instructionCount <- instructionCount +
     WriteOutCode(codePage$frame, startPoint, lengthToUse)
@@ -177,7 +178,7 @@ instructionCount <- instructionCount +
 #Now can alternate between code and rw memory
 lastWasCode <- TRUE
 while(instructionCount < 1000000) {
-  startPoint<-sample(0:4095)
+  startPoint<-sample(0:4095, 1)
   if (lastWasCode == TRUE) {
     if (runif(1, 0, 1) > 0.7) {
       #code
