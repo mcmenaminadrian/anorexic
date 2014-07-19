@@ -122,6 +122,5 @@ instructionCount<-0
 codePage<-(GetACodePage())[1]
 startPoint<-sample(0:4095)
 lengthToUse <-GetACodePageLength(codelengthMin, codelengthMax, codelengths)[1]
-lengthToUse
 instructionCount <- instructionCount +
     WriteOutCode(codePage$frame, startPoint, lengthToUse)
