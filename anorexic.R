@@ -112,11 +112,13 @@ if (opt$spawn > opt$thread) {
     cat("\' />\n")
   }
 }
+
 #get some distributions
 codeMins = c(apply(codefreq, 2, min, na.rm=TRUE))
 codeMaxs = c(apply(codefreq, 2, max, na.rm=TRUE))
 rwMins = c(apply(rwfreq, 2, min, na.rm=TRUE))
 rwMaxs = c(apply(rwfreq, 2, max, na.rm=TRUE))
+
 #pick a code page
 instructionCount<-0
 codePage<-(GetACodePage())[1]
@@ -124,3 +126,29 @@ startPoint<-sample(0:4095)
 lengthToUse <-GetACodePageLength(codelengthMin, codelengthMax, codelengths)[1]
 instructionCount <- instructionCount +
     WriteOutCode(codePage$frame, startPoint, lengthToUse)
+
+#Now can alternate between code and rw memory
+lastWasCode <- TRUE
+while(instructionCount < 1000000) {
+  startPoint<-sample(0:4095)
+  if (lastWasCode == FALSE) {
+    if (runif(1, 0, 1) > 0.7) {
+      #code
+      codePage<-(GetACodePage())[1]
+      lengthToUse<-GetACodePageLength(codelengthMin, codelengthMax, codelengths)[1]
+      instructionCount <- instructionCount +
+        WriteOutCode(codePage$frame, startPoint, lengthToUse)
+      lastWasCode<-TRUE
+    } else {
+      #memory
+    } 
+  } else {
+    #code
+    codePage<-(GetACodePage())[1]
+    lengthToUse<-GetACodePageLength(codelengthMin, codelengthMax, codelengths)[1]
+    instructionCount <- instructionCount +
+      WriteOutCode(codePage$frame, startPoint, lengthToUse)
+    lastWasCode<-TRUE
+  }
+}
+
