@@ -57,7 +57,9 @@ WriteOutCode<- function(page, offset, lengthI) {
   instructions <- 0
   while(localCount < lengthI$length) {
     cat("<instruction address=\"")
-    cat(writePoint)
+    writePoint
+    cat("**")
+    cat(as.hexmode(writePoint))
     cat("\" size=\"")
     maxInst <- lengthI$length - localCount
     if (maxInst < 16) {
@@ -104,7 +106,8 @@ WriteOutRW<- function(page, offset, lengthI) {
       cat("<load")
     }
     cat(" address=\"")
-    cat(writePoint)
+    hexWrite <- as.hexmode(writePoint)
+    cat(hexWrite)
     cat("\" size=\"")
     maxInst <- lengthI$length - localCount
     if (maxInst < 16) {
