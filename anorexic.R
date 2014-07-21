@@ -57,19 +57,17 @@ WriteOutCode<- function(page, offset, lengthI) {
   instructions <- 0
   while(localCount < lengthI$length) {
     cat("<instruction address=\"")
-    writePoint
-    cat("**")
-    cat(as.hexmode(writePoint))
+    cat(as.character(as.hexmode(writePoint)))
     cat("\" size=\"")
     maxInst <- lengthI$length - localCount
     if (maxInst < 16) {
       theLength <- sample(1:maxInst, 1)
-      cat(theLength)
+      cat(as.character(as.hexmode(theLength)))
       localCount <- localCount + theLength
       writePoint <- writePoint + theLength
     } else {
       theLength <- sample(1:16, 1)
-      cat(theLength)
+      cat(as.character(as.hexmode(theLength)))
       localCount <- localCount + theLength
       writePoint <- writePoint + theLength
     }
@@ -94,6 +92,23 @@ GetARWPageLength <- function(mins, maxs, lengths) {
   return(lengthToGet)
 }
 
+HexChar<-function(number) {
+  x<-as.integer(number%%16)
+  str<-as.character(as.hexmode(x))
+  return (str)
+}
+
+HexString<-function(numberX) {
+  number <- as.double(numberX)
+  stringy<-""
+  for (i in 1:16) {
+    stringy<-paste(HexChar(number), stringy, sep="")
+    number <- number/16
+  }
+  return (stringy)
+}
+  
+
 WriteOutRW<- function(page, offset, lengthI) {
 #  writePoint <- bitwShiftL(page, 12)
   writePoint <- page * 2^12 + offset
@@ -106,18 +121,17 @@ WriteOutRW<- function(page, offset, lengthI) {
       cat("<load")
     }
     cat(" address=\"")
-    hexWrite <- as.hexmode(writePoint)
-    cat(hexWrite)
+    cat(HexString(writePoint))
     cat("\" size=\"")
     maxInst <- lengthI$length - localCount
     if (maxInst < 16) {
       theLength <- sample(1:maxInst, 1)
-      cat(theLength)
+      cat(as.character(as.hexmode(theLength)))
       localCount <- localCount + theLength
       writePoint <- writePoint + theLength
     } else {
       theLength <- sample(1:16, 1)
-      cat(theLength)
+      cat(as.character(as.hexmode(theLength)))
       localCount <- localCount + theLength
       writePoint <- writePoint + theLength
     }
